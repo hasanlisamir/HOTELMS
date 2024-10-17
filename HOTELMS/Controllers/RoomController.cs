@@ -1,4 +1,5 @@
 ﻿using HOTELMS.Context;
+using HOTELMS.DTOS;
 using HOTELMS.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -22,8 +23,14 @@ namespace HOTELMS.Controllers
 
         [HttpPost]
 
-        public IActionResult Create(Room room)
+        public IActionResult Create(RoomDto roomDto)
         {
+            var room = new Room();
+            room.Id = roomDto.Id;
+            room.RoomNumbers = roomDto.RoomNumbers;
+            room.Description = roomDto.Description;
+            room.HotelId = roomDto.HotelId;
+            room.Floor=roomDto.Floor;
 
             _dbcontext.Rooms.Add(room);
             _dbcontext.SaveChanges();
@@ -35,8 +42,22 @@ namespace HOTELMS.Controllers
         public IActionResult GetAll()
         {
 
+            var dtos = new List<RoomDto>();
             var Rooms = _dbcontext.Rooms.ToList();
-            return Ok(Rooms);
+            foreach (var room in Rooms)
+            {
+
+                var roomDto = new RoomDto();
+
+                roomDto.Id = room.Id;
+                roomDto.Floor =room.Floor;
+                roomDto.Description = room.Description;
+                roomDto.HotelId = room.HotelId;
+                roomDto.RoomNumbers = room.RoomNumbers;
+                dtos.Add(roomDto);
+
+            }
+            return Ok(dtos);
 
         }
         [HttpGet("{id}")]
@@ -44,7 +65,16 @@ namespace HOTELMS.Controllers
         {
             var room
                 = _dbcontext.Rooms.Find(id);
-            return Ok(room);
+            var roomDto = new RoomDto();
+
+            roomDto.Id = room.Id;
+            roomDto.Floor = room.Floor;
+            roomDto.Description = room.Description;
+            roomDto.HotelId = room.HotelId;
+            roomDto.RoomNumbers = room.RoomNumbers;
+
+
+            return Ok(roomDto);
         }
 
 

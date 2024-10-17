@@ -1,4 +1,5 @@
 ﻿using HOTELMS.Context;
+using HOTELMS.DTOS;
 using HOTELMS.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -24,8 +25,14 @@ namespace HOTELMS.Controllers
 
         [HttpPost]
 
-        public IActionResult Create(Hotel hotel)
+        public IActionResult Create(HotelDto hotelDto)
         {
+            var hotel = new Hotel();
+            hotel.Id = hotelDto.Id;
+            hotel.Name = hotelDto.Name;
+            hotel.Description = hotelDto.Description;
+            hotel.Phone = hotelDto.Phone;
+            hotel.Address = hotelDto.Address;
 
             _dbcontext.Hotels.Add(hotel);
             _dbcontext.SaveChanges();
@@ -36,16 +43,32 @@ namespace HOTELMS.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-
+            var dtos = new List<HotelDto>();
             var Hotels = _dbcontext.Hotels.ToList();
-            return Ok(Hotels);
+            foreach (var hotel in Hotels)
+            {
+                var hotelDto = new HotelDto();
+                hotelDto.Id = hotel.Id;
+                hotelDto.Address = hotel.Address;
+                hotelDto.Name = hotel.Name;
+                hotelDto.Phone = hotel.Phone;
+                hotelDto.Description = hotel.Description;
+                dtos.Add(hotelDto);
+            }
+            return Ok(dtos);
 
         }
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
+            var hotelDto = new HotelDto();
             var hotel = _dbcontext.Hotels.Find(id);
-            return Ok(hotel);
+            hotelDto.Id = hotel.Id;
+            hotelDto.Address = hotel.Address;
+            hotelDto.Phone = hotel.Phone;
+            hotelDto.Description= hotel.Description;
+            hotelDto.Name = hotel.Name;
+            return Ok(hotelDto);
         }
 
 

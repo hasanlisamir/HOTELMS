@@ -1,4 +1,5 @@
 ﻿using HOTELMS.Context;
+using HOTELMS.DTOS;
 using HOTELMS.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -23,8 +24,16 @@ namespace HOTELMS.Controllers
 
         [HttpPost]
 
-        public IActionResult Create(Booking booking)
+        public IActionResult Create(BookingDto bookingDto)
         {
+
+            Booking booking = new Booking();
+            booking.StartDate = bookingDto.StartDate;
+            booking.EndDate =bookingDto.EndDate;
+            booking.CustomerId = bookingDto.CustomerId; 
+            booking.RoomId = bookingDto.RoomId;
+            
+
 
             _dbcontext.Bookings.Add(booking);
             _dbcontext.SaveChanges();
@@ -36,15 +45,39 @@ namespace HOTELMS.Controllers
         public IActionResult GetAll()
         {
 
+
+
+
             var Bookings = _dbcontext.Bookings.ToList();
-            return Ok(Bookings);
+            var dtos = new List<BookingDto>();
+            foreach (var booking in Bookings)
+            {
+                var bookingDto = new BookingDto();
+                bookingDto.StartDate = booking.StartDate;
+                bookingDto.EndDate = booking.EndDate;
+                bookingDto.RoomId = booking.RoomId;
+                bookingDto.Id = booking.Id;
+                bookingDto.CustomerId = booking.CustomerId;
+                dtos.Add(bookingDto);
+            }
+            return Ok(dtos);
 
         }
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
             var booking = _dbcontext.Bookings.Find(id);
-            return Ok(booking);
+
+            var bookingDto = new BookingDto();
+            bookingDto.StartDate = booking.StartDate;
+            bookingDto.EndDate = booking.EndDate;
+            bookingDto.RoomId = booking.RoomId;
+            bookingDto.Id = booking.Id;
+            bookingDto.CustomerId = booking.CustomerId;
+
+
+            return Ok(bookingDto);
+
         }
 
 

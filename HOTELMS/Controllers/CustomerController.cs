@@ -1,4 +1,5 @@
 ﻿using HOTELMS.Context;
+using HOTELMS.DTOS;
 using HOTELMS.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -21,8 +22,16 @@ namespace HOTELMS.Controllers
 
         [HttpPost]
 
-        public IActionResult Create(Customer customer)
+        public IActionResult Create(CustomerDto customerDto)
         {
+
+            var customer = new Customer();
+            customer.Id = customerDto.Id;
+            customer.Surname = customerDto.Surname;
+            customer.Name = customerDto.Name;
+            customer.Salary = customerDto.Salary;
+            customer.Email = customerDto.Email;
+            customer.Address = customerDto.Address;
 
             _dbcontext.Customers.Add(customer);
             _dbcontext.SaveChanges();
@@ -33,16 +42,36 @@ namespace HOTELMS.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
+            var dtos = new List<Customer>();
+   
 
             var customers = _dbcontext.Customers.ToList();
-            return Ok(customers);
+            foreach (var customer in customers) 
+            {
+                var customerDto = new CustomerDto();
+                customerDto.Id = customer.Id;
+                customerDto.Surname=customer.Surname;
+                customerDto.Name = customer.Name;
+                customerDto.Salary = customer.Salary;
+                customerDto.Email = customer.Email;
+                dtos.Add(customer);
+            }
+            return Ok(dtos);
 
         }
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
+
+
             var customer=_dbcontext.Customers.Find(id);
-            return Ok(customer);
+            var customerDto = new CustomerDto();
+            customerDto.Id = customer.Id;
+            customerDto.Surname = customer.Surname;
+            customerDto.Name = customer.Name;
+            customerDto.Salary = customer.Salary;
+            customerDto.Email = customer.Email;
+            return Ok(customerDto);
         }
 
 
